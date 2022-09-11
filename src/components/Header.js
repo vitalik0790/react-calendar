@@ -1,6 +1,12 @@
-import React from "react";
+import React, {useState} from "react";
 
 const Header = ({ displayedDate, onNext, onPrev }) => {
+  const dt = new Date();
+  const year = dt.getFullYear();
+  const month = (dt.getMonth() + 1).toString().padStart(2, "0");
+  const [value, setValue] = useState(`${year}-${month}`);
+  console.log(month);
+  console.log(year);
   return (
     <>
       <div className="flex w-full py-3 border-b shadow-md">
@@ -20,6 +26,7 @@ const Header = ({ displayedDate, onNext, onPrev }) => {
             >
               {">"}
             </button>
+            <input className="" onChange={(e)=>setValue(e.target.value)} type="month" value={value}></input>
           </div>
         </div>
       </div>
