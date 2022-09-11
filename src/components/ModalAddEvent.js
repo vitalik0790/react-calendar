@@ -24,11 +24,11 @@ const ModalAddEvent = ({ onSave, onClose }) => {
               setError(true);
             }
           }}
-          className="w-[85px] text-md font-medium mr-4 px-2 py-1.5 border rounded-lg bg-purple-500"
+          className="w-[85px] text-md font-medium mr-4 px-2 py-1.5 border rounded-lg bg-purple-500 hover:bg-purple-600"
         >
           Save
         </button>
-        <button className="w-[85px] text-md font-medium px-2 py-1.5 border rounded-lg bg-red-500" onClick={onClose}>
+        <button className="w-[85px] text-md font-medium px-2 py-1.5 border rounded-lg bg-red-500 hover:bg-red-600" onClick={onClose}>
           Cancel
         </button>
       </div>

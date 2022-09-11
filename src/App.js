@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Day from "./components/Day";
 import ModalAddEvent from "./components/ModalAddEvent";
+import ModalDeleteAndEditEvent from "./components/ModalDeleteAndEditEvent";
 
 const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -70,11 +71,17 @@ const App = () => {
 
   const onSave = (title) => {
     setEvents([...events, { title: title, date: clicked }]);
+    setClicked(null);
+  };
+
+  const onDelete = () => {
+    setEvents(events.filter((e) => e.date !== clicked));
+    setClicked(null);
   };
 
   return (
     <div className="w-full h-full">
-      <Header />
+      <Header displayedDate={displayedDate} onNext={() => setNav(nav + 1)} onPrev={() => setNav(nav - 1)} />
       <div className="w-full h-full max-w-[1460px] px-[80px] mx-auto">
         <div className="grid grid-cols-7 items-center w-full text-blue-400 pt-8">
           <div className="text-center">Sunday</div>
@@ -101,6 +108,13 @@ const App = () => {
         </div>
       </div>
       {clicked && !eventOfTheDay(clicked) && <ModalAddEvent onSave={onSave} onClose={() => setClicked(null)} />}
+      {clicked && eventOfTheDay(clicked) && (
+        <ModalDeleteAndEditEvent
+          eventText={eventOfTheDay(clicked).title}
+          onDelete={onDelete}
+          onClose={() => setClicked(null)}
+        />
+      )}
     </div>
   );
 };
