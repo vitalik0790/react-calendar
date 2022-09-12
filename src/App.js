@@ -8,9 +8,10 @@ import ModalDeleteAndEditEvent from "./components/ModalDeleteAndEditEvent";
 const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const App = () => {
-  const [nav, setNav] = useState(0);
+  const [monthNum, setMonthNum] = useState(0);
+  const [yearNum, setYearNum] = useState(0);
   const [days, setDays] = useState([]);
-  const [displayedDate, setDisplayedDate] = useState([]);
+  const [displayedDate, setDisplayedDate] = useState();
   const [clicked, setClicked] = useState(false);
   const [events, setEvents] = useState(
     localStorage.getItem("events") ? JSON.parse(localStorage.getItem("events")) : []
@@ -24,8 +25,11 @@ const App = () => {
 
   useEffect(() => {
     const dt = new Date();
-    if (nav !== 0) {
-      dt.setMonth(new Date().getMonth() + nav);
+    if (monthNum !== 0) {
+      dt.setMonth(new Date().getMonth() + monthNum);
+    }
+    if (yearNum !== 0) {
+      dt.setYear(new Date().getYear() + yearNum);
     }
 
     const day = dt.getDate();
@@ -42,19 +46,19 @@ const App = () => {
       day: "numeric",
     });
 
-    setDisplayedDate(`${dt.toLocaleDateString("en-us", { month: "long" })} ${year}`);
+    setDisplayedDate(`${year}-${(month + 1).toString().padStart(2, "0")}`);
     const paddingDays = weekdays.indexOf(dateString.split(", ")[0]);
 
     const daysArr = [];
 
     for (let i = 1; i <= paddingDays + daysInMonth; i++) {
-      const dayString = `${month + 1}/${i - paddingDays}/${year}`;
+      const dayString = `${(month + 1).toString().padStart(2, "0")}/${(i - paddingDays).toString().padStart(2, "0")}/${year}`;
 
       if (i > paddingDays) {
         daysArr.push({
-          value: i - paddingDays,
+          value: (i - paddingDays).toString().padStart(2, "0"),
           event: eventOfTheDay(dayString),
-          isCurrentDay: i - paddingDays === day && nav === 0,
+          isCurrentDay: i - paddingDays === day && monthNum === 0,
           date: dayString,
         });
       } else {
@@ -66,8 +70,9 @@ const App = () => {
         });
       }
     }
+
     setDays(daysArr);
-  }, [events, nav]);
+  }, [events, monthNum]);
 
   const onSave = (title) => {
     setEvents([...events, { title: title, date: clicked }]);
@@ -78,10 +83,18 @@ const App = () => {
     setEvents(events.filter((e) => e.date !== clicked));
     setClicked(null);
   };
-
+  console.log("monthNum", monthNum);
+  console.log("yearNum", yearNum);
   return (
     <div className="w-full h-full">
-      <Header displayedDate={displayedDate} onNext={() => setNav(nav + 1)} onPrev={() => setNav(nav - 1)} />
+      <Header
+        displayedDate={displayedDate}
+        setMonthNum={setMonthNum}
+        setYearNum={setYearNum}
+        setDisplayedDate={setDisplayedDate}
+        onNext={() => setMonthNum(monthNum + 1)}
+        onPrev={() => setMonthNum(monthNum - 1)}
+      />
       <div className="w-full h-full max-w-[1460px] px-[80px] mx-auto">
         <div className="grid grid-cols-7 items-center w-full text-blue-400 pt-8">
           <div className="text-center">Sunday</div>
