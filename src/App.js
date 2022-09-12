@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Header from "./components/Header";
 import Day from "./components/Day";
-import ModalAddEvent from "./components/ModalAddEvent";
+import ModalAddEvents from "./components/ModalAddEvents";
 import ModalDeleteAndEditEvent from "./components/ModalDeleteAndEditEvent";
 
 const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -17,7 +17,7 @@ const App = () => {
     localStorage.getItem("events") ? JSON.parse(localStorage.getItem("events")) : []
   );
 
-  const eventOfTheDay = (date) => events.find((e) => e.date === date);
+  const eventsOfTheDay = (date) => events.filter((e) => e.date === date);
 
   useEffect(() => {
     localStorage.setItem("events", JSON.stringify(events));
@@ -29,12 +29,13 @@ const App = () => {
       dt.setMonth(new Date().getMonth() + monthNum);
     }
     if (yearNum !== 0) {
-      dt.setYear(new Date().getYear() + yearNum);
+      dt.setYear(new Date().getFullYear() + yearNum);
     }
 
     const day = dt.getDate();
     const month = dt.getMonth();
     const year = dt.getFullYear();
+    console.log("dt", dt);
 
     const firstDayOfMonth = new Date(year, month, 1);
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -52,27 +53,31 @@ const App = () => {
     const daysArr = [];
 
     for (let i = 1; i <= paddingDays + daysInMonth; i++) {
-      const dayString = `${(month + 1).toString().padStart(2, "0")}/${(i - paddingDays).toString().padStart(2, "0")}/${year}`;
+      const dayString = `${(month + 1).toString().padStart(2, "0")}/${(i - paddingDays)
+        .toString()
+        .padStart(2, "0")}/${year}`;
 
       if (i > paddingDays) {
         daysArr.push({
           value: (i - paddingDays).toString().padStart(2, "0"),
-          event: eventOfTheDay(dayString),
+          events: eventsOfTheDay(dayString),
           isCurrentDay: i - paddingDays === day && monthNum === 0,
           date: dayString,
+          dayOfTheWeek: weekdays[new Date(year, month, i - paddingDays).getDay()],
         });
       } else {
         daysArr.push({
           value: "padding",
-          event: null,
+          events: null,
           isCurrentDay: false,
           date: "",
+          dayOfTheWeek: "",
         });
       }
     }
 
     setDays(daysArr);
-  }, [events, monthNum]);
+  }, [events, monthNum, yearNum]);
 
   const onSave = (title) => {
     setEvents([...events, { title: title, date: clicked }]);
@@ -83,12 +88,13 @@ const App = () => {
     setEvents(events.filter((e) => e.date !== clicked));
     setClicked(null);
   };
-  console.log("monthNum", monthNum);
-  console.log("yearNum", yearNum);
+  console.log("days", days);
+
   return (
     <div className="w-full h-full">
       <Header
         displayedDate={displayedDate}
+        onClick={() => setClicked(true)}
         setMonthNum={setMonthNum}
         setYearNum={setYearNum}
         setDisplayedDate={setDisplayedDate}
@@ -120,10 +126,10 @@ const App = () => {
           ))}
         </div>
       </div>
-      {clicked && !eventOfTheDay(clicked) && <ModalAddEvent onSave={onSave} onClose={() => setClicked(null)} />}
-      {clicked && eventOfTheDay(clicked) && (
+      {clicked && eventsOfTheDay(clicked).length === 0 && <ModalAddEvents onSave={onSave} onClose={() => setClicked(null)} />}
+      {clicked && eventsOfTheDay(clicked).length > 0 && (
         <ModalDeleteAndEditEvent
-          eventText={eventOfTheDay(clicked).title}
+          eventsText={eventsOfTheDay(clicked)}
           onDelete={onDelete}
           onClose={() => setClicked(null)}
         />

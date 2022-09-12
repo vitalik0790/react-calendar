@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ModalAddEvent = ({ onSave, onClose }) => {
+const ModalAddEvents = ({ onSave, onClose }) => {
   const [title, setTitle] = useState("");
   const [error, setError] = useState(false);
 
@@ -37,4 +37,4 @@ const ModalAddEvent = ({ onSave, onClose }) => {
   );
 };
 
-export default ModalAddEvent;
+export default ModalAddEvents;
